@@ -1,0 +1,8 @@
+[
+  { "company_id": "hengli", "company": "恒力石化", "code": "600346", "year": 2026, "netProfit": 118, "pe": 14, "peNext": 11, "rating": "买入" },
+  { "company_id": "rongsheng", "company": "荣盛石化", "code": "002493", "year": 2026, "netProfit": 65, "pe": 17, "peNext": 15, "rating": "买入" },
+  { "company_id": "tongkun", "company": "桐昆股份", "code": "601233", "year": 2026, "netProfit": 61, "pe": 9.5, "peNext": 7.9, "rating": "买入" },
+  { "company_id": "xinfengming", "company": "新凤鸣", "code": "603225", "year": 2026, "netProfit": 19, "pe": 13, "peNext": 10, "rating": "买入" },
+  { "company_id": "hengyi", "company": "恒逸石化", "code": "000703", "year": 2026, "netProfit": 8, "pe": 20, "peNext": 14, "rating": "增持" },
+  { "company_id": "shenghong", "company": "东方盛虹", "code": "000301", "year": 2026, "netProfit": 4, "pe": 35, "peNext": 20, "rating": "增持" }
+]

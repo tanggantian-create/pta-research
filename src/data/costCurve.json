@@ -1,0 +1,6 @@
+[
+  { "region": "中国-恒力/荣盛", "costLow": 480, "costHigh": 510 },
+  { "region": "印度-Reliance", "costLow": 530, "costHigh": 560 },
+  { "region": "韩国-Lotte/SK", "costLow": 580, "costHigh": 610 },
+  { "region": "美国-INVISTA/Indorama", "costLow": 620, "costHigh": 670 }
+]

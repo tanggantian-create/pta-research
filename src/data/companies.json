@@ -1,0 +1,8 @@
+[
+  { "id": "hengli", "nameCn": "恒力石化", "name": "Hengli Petrochemical", "code": "600346", "market": "A", "rank": 1 },
+  { "id": "rongsheng", "nameCn": "荣盛石化", "name": "Rongsheng Petrochemical", "code": "002493", "market": "A", "rank": 2 },
+  { "id": "tongkun", "nameCn": "桐昆股份", "name": "Tongkun Group", "code": "601233", "market": "A", "rank": 3 },
+  { "id": "xinfengming", "nameCn": "新凤鸣", "name": "Xinfengming Group", "code": "603225", "market": "A", "rank": 4 },
+  { "id": "hengyi", "nameCn": "恒逸石化", "name": "Hengyi Petrochemical", "code": "000703", "market": "A", "rank": 5 },
+  { "id": "shenghong", "nameCn": "东方盛虹", "name": "Eastern Shenghong", "code": "000301", "market": "A", "rank": 6 }
+]
