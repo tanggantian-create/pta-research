@@ -60,13 +60,35 @@ function parseCSV(csv) {
   return lines.map((line) => line.split(sep).map((v) => v.trim()))
 }
 
+/**
+ * 智能行修复:
+ * 1. 如果整行数据被粘贴到了第一个单元格(其余列全空, 且第一列含逗号),
+ *    则把第一列按逗号拆分成多列。
+ * 2. 若拆分后为 16 列(粘贴时多了一个逗号/空字段, 常见于缺数据的行),
+ *    且第二列为年份(如 2026H1), 则删除多余的空字段还原为 15 列。
+ */
+function repairRow(row) {
+  let fields = [...row]
+  const first = fields[0]
+  const restEmpty = fields.slice(1).every((v) => v === '')
+  if (first && first.includes(',') && restEmpty) {
+    fields = first.split(',').map((v) => v.trim())
+  }
+  // 16列 → 15列: 模式 [id, year, '', '', '', num, 'x%~y%', ...] 中删除第5个空字段
+  if (fields.length === 16 && /^\d{4}(H[12])?$/.test(fields[1] ?? '')) {
+    fields.splice(4, 1)
+  }
+  return fields
+}
+
 function rowsToObjects(rows) {
   if (rows.length < 2) return []
   const headers = rows[0].map((h) => h.trim())
   return rows.slice(1).map((row) => {
     const obj = {}
+    const rowFields = repairRow(row)
     headers.forEach((h, i) => {
-      let val = row[i] ?? ''
+      let val = rowFields[i] ?? ''
       // Convert numeric strings
       if (val !== '' && !isNaN(val) && val.trim() !== '') {
         const num = Number(val)

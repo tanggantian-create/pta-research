@@ -13,6 +13,13 @@ function formatCurrency(yi: number): string {
   return yi.toFixed(2) + '亿'
 }
 
+/** 空值容错:返回数字或 null */
+function num(v: unknown): number | null {
+  if (v === '' || v === undefined || v === null) return null
+  const n = Number(v)
+  return isNaN(n) ? null : n
+}
+
 export default function FinancialTable() {
   const [mode, setMode] = useState<TableMode>('domestic')
   const { year } = useYear()
@@ -72,35 +79,53 @@ export default function FinancialTable() {
                 </tr>
               </thead>
               <tbody>
-                {cnData.map((c) => (
+                {cnData.map((c) => {
+                  const rev = num(c.revenue)
+                  const revYoY = num(c.revenueYoY)
+                  const np = num(c.netProfit)
+                  const gm = num(c.grossMargin)
+                  const nm = num(c.netMargin)
+                  const roe = num(c.roe)
+                  const debt = num(c.debtRatio)
+                  const ocf = num(c.operatingCF)
+                  return (
                   <tr key={c.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                     <td className="p-4 text-white font-medium">{c.nameCn}</td>
                     <td className="p-4 text-slate-500">{c.code}</td>
-                    <td className="p-4 text-white text-right">{formatCurrency(c.revenue)}</td>
-                    <td className={`p-4 text-right ${c.revenueYoY < 0 ? 'text-red-400' : 'text-teal-400'}`}>
-                      {c.revenueYoY > 0 ? '+' : ''}{c.revenueYoY}%
+                    <td className="p-4 text-white text-right">{rev === null ? '—' : formatCurrency(rev)}</td>
+                    <td className={`p-4 text-right ${revYoY === null ? '' : revYoY < 0 ? 'text-red-400' : 'text-teal-400'}`}>
+                      {revYoY === null ? '—' : (revYoY > 0 ? '+' : '') + revYoY + '%'}
                     </td>
                     <td className="p-4 text-right">
-                      <span className={c.netProfit > 10 ? 'text-teal-400 font-semibold' : 'text-slate-300'}>
-                        {formatCurrency(c.netProfit)}
-                      </span>
-                      <div className="text-xs text-slate-500">{c.netProfitYoY}</div>
+                      {np === null ? (
+                        <span className="text-slate-400">—</span>
+                      ) : (
+                        <>
+                          <span className={np > 10 ? 'text-teal-400 font-semibold' : 'text-slate-300'}>
+                            {formatCurrency(np)}
+                          </span>
+                          <div className="text-xs text-slate-500">{c.netProfitYoY}</div>
+                        </>
+                      )}
                     </td>
                     <td className="p-4 text-right">
-                      <span className={c.grossMargin > 10 ? 'text-teal-400' : 'text-slate-300'}>
-                        {c.grossMargin}%
-                      </span>
+                      {gm === null ? <span className="text-slate-400">—</span> : (
+                        <span className={gm > 10 ? 'text-teal-400' : 'text-slate-300'}>
+                          {gm}%
+                        </span>
+                      )}
                     </td>
-                    <td className="p-4 text-right text-slate-300">{c.netMargin}%</td>
-                    <td className={`p-4 text-right font-semibold ${c.roe > 5 ? 'text-teal-400' : c.roe > 1 ? 'text-slate-300' : 'text-red-400'}`}>
-                      {c.roe}%
+                    <td className="p-4 text-right text-slate-300">{nm === null ? '—' : nm + '%'}</td>
+                    <td className={`p-4 text-right font-semibold ${roe === null ? '' : roe > 5 ? 'text-teal-400' : roe > 1 ? 'text-slate-300' : 'text-red-400'}`}>
+                      {roe === null ? '—' : roe + '%'}
                     </td>
-                    <td className={`p-4 text-right ${c.debtRatio > 75 ? 'text-red-400' : 'text-slate-300'}`}>
-                      {c.debtRatio}%
+                    <td className={`p-4 text-right ${debt === null ? '' : debt > 75 ? 'text-red-400' : 'text-slate-300'}`}>
+                      {debt === null ? '—' : debt + '%'}
                     </td>
-                    <td className="p-4 text-right text-slate-300">{formatCurrency(c.operatingCF)}</td>
+                    <td className="p-4 text-right text-slate-300">{ocf === null ? '—' : formatCurrency(ocf)}</td>
                   </tr>
-                ))}
+                  )
+                })}
               </tbody>
             </table>
           ) : (
@@ -161,7 +186,11 @@ export default function FinancialTable() {
               </thead>
               <tbody>
                 {cnData.map((c) => {
-                  const usdProfit = c.netProfit / 7.2
+                  const np = num(c.netProfit)
+                  const usdProfit = np === null ? null : np / 7.2
+                  const gm = num(c.grossMargin)
+                  const nm = num(c.netMargin)
+                  const roe = num(c.roe)
                   const advantages: Record<string, string> = {
                     hengli: 'PX自给95%·成本最低·唯一两位数ROE',
                     tongkun: '长丝龙头·反内卷弹性最大',
@@ -171,14 +200,14 @@ export default function FinancialTable() {
                     shenghong: '大炼化转型·产能扩张中',
                   }
                   return (
-                    <tr key={c.id} className={`border-b border-white/5 ${c.roe > 5 ? 'bg-teal-500/5' : ''}`}>
-                      <td className={`p-4 font-medium ${c.roe > 5 ? 'text-teal-400' : 'text-white'}`}>{c.nameCn}</td>
-                      <td className={`p-4 text-right font-bold ${usdProfit > 0 ? 'text-teal-400' : 'text-red-400'}`}>
-                        {usdProfit > 0 ? '+' : ''}{usdProfit.toFixed(2)}
+                    <tr key={c.id} className={`border-b border-white/5 ${roe !== null && roe > 5 ? 'bg-teal-500/5' : ''}`}>
+                      <td className={`p-4 font-medium ${roe !== null && roe > 5 ? 'text-teal-400' : 'text-white'}`}>{c.nameCn}</td>
+                      <td className={`p-4 text-right font-bold ${usdProfit === null ? '' : usdProfit > 0 ? 'text-teal-400' : 'text-red-400'}`}>
+                        {usdProfit === null ? '—' : (usdProfit > 0 ? '+' : '') + usdProfit.toFixed(2)}
                       </td>
-                      <td className="p-4 text-slate-300 text-right">{c.grossMargin}%</td>
-                      <td className="p-4 text-slate-300 text-right">{c.netMargin}%</td>
-                      <td className="p-4 text-slate-300 text-right font-semibold">{c.roe}%</td>
+                      <td className="p-4 text-slate-300 text-right">{gm === null ? '—' : gm + '%'}</td>
+                      <td className="p-4 text-slate-300 text-right">{nm === null ? '—' : nm + '%'}</td>
+                      <td className="p-4 text-slate-300 text-right font-semibold">{roe === null ? '—' : roe + '%'}</td>
                       <td className="p-4 text-gold-400 text-right">{c.ptaCapacity}</td>
                       <td className="p-4 text-slate-400 text-xs">{advantages[c.id] ?? ''}</td>
                     </tr>

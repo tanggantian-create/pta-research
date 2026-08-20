@@ -18,7 +18,9 @@ export default function IndustryOverview() {
   const yearData = financials.filter((d) => d.year === year)
   const totalChinaCapacity = yearData.reduce((sum, d) => sum + (d.ptaCapacity || 0), 0)
 
-  const marketYear = (marketSizeData as { year: number; value: number }[]).find((d) => d.year === year)
+  const marketYear = (marketSizeData as { year: number; value: number }[]).find(
+    (d) => d.year === year || String(year).startsWith(String(d.year))
+  )
   const marketValue = marketYear ? marketYear.value : 580
 
   const sortedCap = [...yearData].sort((a, b) => (b.ptaCapacity || 0) - (a.ptaCapacity || 0))

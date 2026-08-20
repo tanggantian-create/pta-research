@@ -9,6 +9,18 @@ function formatCurrency(yi: number): string {
   return yi >= 1000 ? `${(yi / 1000).toFixed(2)}千亿` : `${yi.toFixed(2)}亿`
 }
 
+/** 空值容错:返回数字或 null */
+function num(v: unknown): number | null {
+  if (v === '' || v === undefined || v === null) return null
+  const n = Number(v)
+  return isNaN(n) ? null : n
+}
+
+function fmt(v: unknown, suffix = ''): string {
+  const n = num(v)
+  return n === null ? '—' : n.toFixed(2) + suffix
+}
+
 export default function CompanyCards() {
   const { year } = useYear()
   const financials = financialsData as CompanyData[]
@@ -63,26 +75,26 @@ export default function CompanyCards() {
             <div className="space-y-2.5 pt-4 border-t border-white/10">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">营收</span>
-                <span className="text-white">{formatCurrency(c.revenue)}</span>
+                <span className="text-white">{num(c.revenue) === null ? '—' : formatCurrency(num(c.revenue)!)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">净利润</span>
-                <span className={c.netProfit > 10 ? 'text-teal-400' : 'text-slate-300'}>
-                  {formatCurrency(c.netProfit)}
+                <span className={num(c.netProfit) !== null && num(c.netProfit)! > 10 ? 'text-teal-400' : 'text-slate-300'}>
+                  {num(c.netProfit) === null ? '—' : formatCurrency(num(c.netProfit)!)}
                   <span className="text-xs text-slate-500 ml-1">{c.netProfitYoY}</span>
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">毛利率</span>
-                <span className="text-white">{c.grossMargin}%</span>
+                <span className="text-white">{fmt(c.grossMargin, '%')}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">ROE</span>
-                <span className={c.roe > 5 ? 'text-teal-400' : 'text-slate-300'}>{c.roe}%</span>
+                <span className={num(c.roe) !== null && num(c.roe)! > 5 ? 'text-teal-400' : 'text-slate-300'}>{fmt(c.roe, '%')}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">资产负债率</span>
-                <span className={c.debtRatio > 75 ? 'text-red-400' : 'text-slate-300'}>{c.debtRatio}%</span>
+                <span className={num(c.debtRatio) !== null && num(c.debtRatio)! > 75 ? 'text-red-400' : 'text-slate-300'}>{fmt(c.debtRatio, '%')}</span>
               </div>
             </div>
           </div>

@@ -16,7 +16,7 @@ export default function Outlook() {
   const { year } = useYear()
   const financials = financialsData as CompanyData[]
   const yearData = financials.filter((d) => d.year === year)
-  const estimates = (estimationsData as EstimationData[]).filter((e) => e.year === year)
+  const estimates = (estimationsData as EstimationData[]).filter((e) => e.year === year || String(year).startsWith(String(e.year)))
 
   return (
     <section id="outlook" className="py-24 px-6 max-w-7xl mx-auto">
@@ -65,19 +65,22 @@ export default function Outlook() {
                 <th className="p-4 text-slate-400 font-medium">代码</th>
                 <th className="p-4 text-slate-400 font-medium text-right">{year}净利润(亿)</th>
                 <th className="p-4 text-slate-400 font-medium text-right">{year}E PE</th>
-                <th className="p-4 text-slate-400 font-medium text-right">{year + 1}E PE</th>
+                <th className="p-4 text-slate-400 font-medium text-right">{Number(String(year).replace(/[^0-9]/g, '')) + 1}E PE</th>
                 <th className="p-4 text-slate-400 font-medium text-center">评级</th>
               </tr>
             </thead>
             <tbody>
               {estimates.map((e) => {
                 const actual = yearData.find((f) => f.company_id === e.company_id)
+                const actualProfit = actual && String(actual.netProfit) !== '' && actual.netProfit !== undefined
+                  ? Number(actual.netProfit)
+                  : null
                 return (
                   <tr key={e.code} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                     <td className="p-4 text-white font-medium">{e.company}</td>
                     <td className="p-4 text-slate-500">{e.code}</td>
                     <td className="p-4 text-teal-400 text-right font-semibold">
-                      {actual ? actual.netProfit.toFixed(2) + '→' : ''}{e.netProfit.toFixed(0)}
+                      {actualProfit !== null && !isNaN(actualProfit) ? actualProfit.toFixed(2) + '→' : ''}{e.netProfit.toFixed(0)}
                     </td>
                     <td className={`p-4 text-right font-semibold ${e.pe < 12 ? 'text-gold-400' : 'text-slate-300'}`}>
                       {e.pe}x

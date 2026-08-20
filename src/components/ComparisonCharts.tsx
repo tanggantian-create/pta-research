@@ -9,6 +9,13 @@ import type { CompanyData, CompanyInfo, CostData, EstimationData } from '../data
 
 type MergedCompany = CompanyInfo & CompanyData
 
+/** 空值容错:返回数字或 null */
+function num(v: unknown): number | null {
+  if (v === '' || v === undefined || v === null) return null
+  const n = Number(v)
+  return isNaN(n) ? null : n
+}
+
 export default function ComparisonCharts() {
   const { year } = useYear()
   const financials = financialsData as CompanyData[]
@@ -45,10 +52,12 @@ export default function ComparisonCharts() {
       {
         name: '归母净利润',
         type: 'bar',
-        data: cnCompanies.map((c) => c.netProfit),
+        data: cnCompanies.map((c) => num(c.netProfit) ?? 0),
         itemStyle: {
-          color: (p: any) =>
-            p.value > 20 ? '#14b8a0' : p.value > 5 ? '#d4b96a' : '#64748b',
+          color: (p: any) => {
+            const v = p.value ?? 0
+            return v > 20 ? '#14b8a0' : v > 5 ? '#d4b96a' : '#64748b'
+          },
           borderRadius: [4, 4, 0, 0],
         },
         barWidth: '50%',
@@ -57,7 +66,7 @@ export default function ComparisonCharts() {
           position: 'top',
           color: '#94a3b8',
           fontSize: 10,
-          formatter: (p: any) => p.value.toFixed(1) + '亿',
+          formatter: (p: any) => (p.value ? p.value.toFixed(1) + '亿' : '预告'),
         },
       },
     ],
@@ -92,7 +101,7 @@ export default function ComparisonCharts() {
       {
         name: '毛利率',
         type: 'bar',
-        data: cnCompanies.map((c) => c.grossMargin),
+        data: cnCompanies.map((c) => num(c.grossMargin) ?? 0),
         itemStyle: { color: '#14b8a0', borderRadius: [4, 4, 0, 0] },
         barWidth: '35%',
         barGap: '20%',
@@ -102,7 +111,7 @@ export default function ComparisonCharts() {
         name: 'ROE',
         type: 'bar',
         yAxisIndex: 1,
-        data: cnCompanies.map((c) => c.roe),
+        data: cnCompanies.map((c) => num(c.roe) ?? 0),
         itemStyle: { color: '#d4b96a', borderRadius: [4, 4, 0, 0] },
         barWidth: '35%',
         label: { show: true, position: 'top', color: '#94a3b8', fontSize: 10 },
@@ -199,7 +208,7 @@ export default function ComparisonCharts() {
     ],
   }
 
-  const estYearData = (estimationsData as EstimationData[]).filter((e) => e.year === year)
+  const estYearData = (estimationsData as EstimationData[]).filter((e) => e.year === year || String(year).startsWith(String(e.year)))
   const valuationOption = estYearData.length > 0 ? {
     backgroundColor: 'transparent',
     tooltip: {
