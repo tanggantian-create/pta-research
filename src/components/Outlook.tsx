@@ -1,16 +1,25 @@
 import { useYear } from '../contexts/YearContext'
-import { elasticityData } from '../data/financials'
+import { elasticityData as fallbackElasticity } from '../data/financials'
 import financialsData from '../data/financials.json'
 import estimationsData from '../data/estimations.json'
+import insightsData from '../data/insights.json'
 import type { CompanyData, EstimationData } from '../data/financials'
 
-const capacityTimeline = [
+const fallbackTimeline = [
   { year: '2019-2023', label: '高速扩产期', desc: '年均新增产能800-1000万吨', type: 'expansion' },
   { year: '2024', label: '扩产尾声', desc: '新增产能放缓至400万吨', type: 'slow' },
   { year: '2025', label: '拐点出现', desc: '工信部反内卷·联合减产超1000万吨', type: 'inflection' },
   { year: '2026E', label: '零新增', desc: '2019年以来首次全年无新增产能', type: 'peak' },
   { year: '2027-2028E', label: '低速增长', desc: '年化新增仅200-600万吨，CAGR 2.8%', type: 'slow' },
 ]
+
+const insights = (insightsData as {
+  capacityTimeline?: typeof fallbackTimeline
+  elasticity?: typeof fallbackElasticity
+}) ?? {}
+
+const capacityTimeline = insights.capacityTimeline?.length ? insights.capacityTimeline : fallbackTimeline
+const elasticityData = insights.elasticity?.length ? insights.elasticity : fallbackElasticity
 
 export default function Outlook() {
   const { year } = useYear()

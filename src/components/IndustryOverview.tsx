@@ -1,6 +1,7 @@
 import { useYear } from '../contexts/YearContext'
 import financialsData from '../data/financials.json'
 import marketSizeData from '../data/marketSize.json'
+import insightsData from '../data/insights.json'
 import type { CompanyData } from '../data/financials'
 
 const chainSteps = [
@@ -11,6 +12,10 @@ const chainSteps = [
   { label: '聚酯', desc: '涤纶长丝/短纤' },
   { label: '终端', desc: '纺织服装/包装瓶' },
 ]
+
+const FALLBACK_SUMMARY = 'PTA是聚酯产业链中游核心原料，中国产能占全球68%，2025年行业迎来供需格局历史性拐点'
+const insights = (insightsData as { industrySummary?: string }) ?? {}
+const industrySummary = insights.industrySummary || FALLBACK_SUMMARY
 
 export default function IndustryOverview() {
   const { year } = useYear()
@@ -40,7 +45,7 @@ export default function IndustryOverview() {
         <p className="text-teal-400 text-sm tracking-widest uppercase mb-3">Industry Overview</p>
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">行业整体发展</h2>
         <p className="text-slate-400 max-w-2xl mx-auto">
-          PTA是聚酯产业链中游核心原料，中国产能占全球68%，2025年行业迎来供需格局历史性拐点
+          {industrySummary}
         </p>
       </div>
 

@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "fetch-data": "node scripts/fetch-data.mjs",
+    "generate-insights": "node scripts/generate-insights.mjs",
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:with-data": "npm run fetch-data && tsc -b && vite build",
+    "build:with-data": "npm run fetch-data && npm run generate-insights && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "npm run build:with-data && wrangler dev",
     "deploy": "npm run build:with-data && wrangler deploy"
